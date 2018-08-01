@@ -1,9 +1,7 @@
 module.exports = function log(data) {
   console.log(`${data.timestamp.toISOString()} ${data.severity} ${data.msg}`);
-  console.log('\t', 'stack.file', data.stack.file);
-  console.log('\t', 'stack.line', data.stack.line);
-  console.log('\t', 'stack.func', data.stack.function);
+  console.log('\t', data.stack.function, data.stack.file, data.stack.line);
   if (data.errInfo) {
-    console.log('\t', 'err', data.errInfo.err_message);
+    console.log('\t', data.errInfo.err_message);
   }
 }
