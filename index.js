@@ -12,23 +12,25 @@ const sevs = [
 
 function log(severity) {
   return function logger(msg, err, other) {
-    const stack = utils.getStack(1);
-    let errInfo = null;
-    if (err) {
-      if (err instanceof Error) {
-        errInfo = utils.parseError(err);
-      } else {
-        errInfo = utils.parseError(new Error(err));
-      }
-    }
     const data = {
+      timestamp: new Date(),
       severity,
       msg,
-      stack,
-      errInfo,
+      stack: utils.getStack(1),
+      NODE_ENV: process.env.NODE_ENV,
     };
+
+    if (err) {
+      if (err instanceof Error) {
+        data.errInfo = utils.parseError(err);
+      } else {
+        data.errInfo = utils.parseError(new Error(err));
+      }
+    }
+
     console.log(require('util').inspect(data, { depth: null }));
     console.log('\n\n');
+    return data;
   };
 }
 
