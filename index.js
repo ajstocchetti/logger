@@ -1,4 +1,4 @@
-const util = require('util');
+const stdout = require('./stdout');
 const utils = require('./utils');
 
 const sevs = [
@@ -28,8 +28,7 @@ function log(severity) {
       }
     }
 
-    console.log(require('util').inspect(data, { depth: null }));
-    console.log('\n\n');
+    stdout(data);
     return data;
   };
 }
