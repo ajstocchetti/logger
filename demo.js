@@ -16,5 +16,6 @@ function aassddff() {
   logger.info('here', 'help!', { a:1, b:2});
 }
 
-// asdf();
+asdf();
 aassddff();
+logger.debug('testing')
