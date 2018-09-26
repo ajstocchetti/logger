@@ -1,4 +1,4 @@
-const logger = require('./index');
+const logger = require('./src/index');
 
 
 
@@ -13,8 +13,8 @@ function asdf() {
 }
 
 function aassddff() {
-  logger.info('here');
+  logger.info('here', 'help!', { a:1, b:2});
 }
 
-asdf();
+// asdf();
 aassddff();

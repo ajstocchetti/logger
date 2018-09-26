@@ -5,10 +5,10 @@ module.exports = {
 
 function parseError(err) {
   return {
-    err_message: err.message,
-    err_stack: err.stack,
-    err_name: err.stack.split(':')[0],
-    err_line: (err.stack.split('\n')[1]).split(':')[1],
+    message: err.message,
+    name: err.stack.split(':')[0],
+    line: (err.stack.split('\n')[1]).split(':')[1],
+    stack: err.stack,
   };
 }
 
