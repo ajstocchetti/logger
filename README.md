@@ -11,8 +11,14 @@ Todo:
 Current state: intended to be used in AWS lambda -> cloud watch logs
 
 ## Basic Usage
+Install
+```bash
+npm -i arol
+```
+
+Use
 ```javascript
-const logger = require('./src');
+const logger = require('arol');
 logger.info('Here is a message');
 
 // add some details
