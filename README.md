@@ -1,8 +1,14 @@
-# Simple Logger
+# AROL
 
-Intended to expedite logging in applications
+Anal Retentive Opinionated Logger
 
-Todo: turn into node module
+Because I'm really high maintenance about my logging. Sorry I'm not sorry.
+
+Todo:
+- add outputs other than the console
+- make console logger easier to read
+
+Current state: intended to be used in AWS lambda -> cloud watch logs
 
 ## Basic Usage
 ```javascript

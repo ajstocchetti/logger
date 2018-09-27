@@ -1,5 +1,5 @@
 {
-  "name": "logger",
+  "name": "arol",
   "version": "1.0.0",
   "description": "Intended to expedite logging in applications",
   "main": "index.js",

@@ -1,21 +1,9 @@
 const logger = require('./src/index');
 
+logger.info('i thought you would like to know', null, { foo: 'bar' });
+logger.error('An error occured', new Error('Demoing an error'));
 
-
-function doWork() {
-  logger.warn('Oh no!', new Error('asfd'));
-  logger.warn('text error', 'this is an error string')
+function someBusinessLogic() {
+  logger.debug('doing buisiness logic');
 }
-
-
-function asdf() {
-  doWork();
-}
-
-function aassddff() {
-  logger.info('here', 'help!', { a:1, b:2});
-}
-
-asdf();
-aassddff();
-logger.debug('testing')
+someBusinessLogic();
