@@ -1,10 +1,23 @@
 const utils = require('./utils');
 
 let extras = {};
-function init(opts = {}) {
-  // check for truthy in case null is passed in
-  if (!opts || typeof opts !== 'object') return;
-  Object.keys(opts).forEach(k => extras[k] = opts[k]);
+const options = {
+  ts: true,
+  tsKey: 'timestamp',
+  stack: true,
+};
+
+const isObj = p => p && typeof p === 'object';
+
+function init(statics = {}, opts = {}) {
+  if (!isObj(opts)) opts = {};
+  options.ts = !opts.skipTs;
+  options.tsKey = opts.tsKey || 'timestamp';
+  options.stack = !opts.skipStack;
+
+  if (isObj(statics)) {
+    Object.keys(statics).forEach(k => extras[k] = statics[k]);
+  }
 }
 
 
@@ -12,12 +25,14 @@ function log(severity) {
   return function logger(msg, err, details) {
     const data = {
       ...extras,
-      timestamp: new Date(),
       severity,
       msg,
-      stack: utils.getStack(1),
       NODE_ENV: process.env.NODE_ENV,
     };
+    if (options.ts) {
+      data[options.tsKey] = new Date();
+    }
+    if (options.stack) data.stack = utils.getStack(1);
 
     if (err) {
       if (err instanceof Error) {
