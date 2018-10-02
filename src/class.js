@@ -38,11 +38,13 @@ class logger {
   }
 
   logReal(sev, msg, err, details) {
-    const data = {};
+    let data = {};
     Object.keys(this._every).forEach(key => {
       const val = this._every[key];
       data[key] = (typeof val === 'function') ? val() : val;
     });
+
+    if (isObj(details)) data = {...data, ...details };
 
     if (this._provided.timestamp) data[this._provided.timestamp] = new Date();
     if (this._provided.severity) data[this._provided.severity] = sev;
