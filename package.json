@@ -4,7 +4,7 @@
   "description": "Intended to expedite logging in applications",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -12,5 +12,10 @@
   },
   "author": "Andy Stocchetti",
   "license": "ISC",
-  "homepage": "https://github.com/ajstocchetti/logger#readme"
+  "homepage": "https://github.com/ajstocchetti/logger#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.3.4"
+  }
 }
