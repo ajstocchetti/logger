@@ -1,38 +1,55 @@
 const utils = require('./utils');
 
-let extras = {};
-const options = {
-  ts: true,
-  tsKey: 'timestamp',
-  stack: true,
-};
-
 const isObj = p => p && typeof p === 'object';
+const makeObj = (o, obj = {}) => isObj(o) ? o : obj;
 
-function init(statics = {}, opts = {}) {
-  if (!isObj(opts)) opts = {};
-  options.ts = !opts.skipTs;
-  options.tsKey = opts.tsKey || 'timestamp';
-  options.stack = !opts.skipStack;
-
-  if (isObj(statics)) {
-    Object.keys(statics).forEach(k => extras[k] = statics[k]);
-  }
-}
-
-
-function log(severity) {
-  return function logger(msg, err, details) {
-    const data = {
-      ...extras,
-      severity,
-      msg,
-      NODE_ENV: process.env.NODE_ENV,
+class logger {
+  constructor(opts = {}) {
+    this._every = makeObj(opts.every);
+    this._provided = {
+      timestamp: opts.hasOwnProperty('timestamp') ? opts.timestamp : 'timestamp',
+      severity: opts.hasOwnProperty('severity') ? opts.severity : 'severity',
+      message: opts.hasOwnProperty('message') ? opts.message : 'msg',
+      stack: opts.hasOwnProperty('stack') ? opts.stack : 'stack',
     };
-    if (options.ts) {
-      data[options.tsKey] = new Date();
-    }
-    if (options.stack) data.stack = utils.getStack(1);
+    this._outputs = Array.isArray(opts.outputs) ? opts.outputs : [printJson];
+  }
+
+  log(severity, msg, err, details) {
+    return this.logReal(severity, msg, err, details);
+  }
+  trace(msg, err, details) {
+    return this.logReal('trace', msg, err, details);
+  }
+  debug(msg, err, details) {
+    return this.logReal('debug', msg, err, details);
+  }
+  info(msg, err, details) {
+    return this.logReal('info', msg, err, details);
+  }
+  warn(msg, err, details) {
+    return this.logReal('warn', msg, err, details);
+  }
+  error(msg, err, details) {
+    return this.logReal('error', msg, err, details);
+  }
+  fatal(msg, err, details) {
+    return this.logReal('fatal', msg, err, details);
+  }
+
+  logReal(sev, msg, err, details) {
+    let data = {};
+    Object.keys(this._every).forEach(key => {
+      const val = this._every[key];
+      data[key] = (typeof val === 'function') ? val() : val;
+    });
+
+    if (isObj(details)) data = {...data, ...details };
+
+    if (this._provided.timestamp) data[this._provided.timestamp] = new Date();
+    if (this._provided.severity) data[this._provided.severity] = sev;
+    if (this._provided.message) data[this._provided.message] = msg;
+    if (this._provided.stack) data[this._provided.stack] = utils.getStack(2);
 
     if (err) {
       if (err instanceof Error) {
@@ -42,23 +59,27 @@ function log(severity) {
       }
     }
 
-    if (details) data.details = details;
-
-    print(data);
+    this._outputs.forEach(output => {
+      if (typeof output === 'function') {
+        try {
+          output(data);
+        } catch(err) {
+          // ?!?!
+        }
+      }
+    });
     return data;
-  };
+  }
 }
 
-function print(data) {
+function printJson(data) {
   console.log(JSON.stringify(data, null, 2));
 }
 
-module.exports = {
-  init,
-  trace: log('trace'),
-  debug: log('debug'),
-  info: log('info'),
-  warn: log('warn'),
-  error: log('error'),
-  fatal: log('fatal'),
-};
+function printLine(data, keys = ['timestamp', 'severity', 'msg']) {
+  const some = [];
+  keys.forEach(k => some.push(data[k]));
+  console.log(some.join('\t'));
+}
+
+module.exports = logger;

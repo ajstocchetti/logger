@@ -1,6 +1,6 @@
 const chai = require('chai');
 const path = require('path');
-const logClass = require('../src/class');
+const logClass = require('../src');
 const helper = require('./helper');
 
 const expect = chai.expect;
