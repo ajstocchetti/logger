@@ -60,7 +60,13 @@ class logger {
     }
 
     this._outputs.forEach(output => {
-      if (typeof output === 'function') output(data);
+      if (typeof output === 'function') {
+        try {
+          output(data);
+        } catch(err) {
+          // ?!?!
+        }
+      }
     });
     return data;
   }
