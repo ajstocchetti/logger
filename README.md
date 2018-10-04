@@ -57,12 +57,17 @@ const logger = new Arol({
   outputs: [ console.log ],
 });
 ```
-*every*: An object to copy to every log
-*timestamp*: the key to save the timestamp to. If falsely value is provided, timestamp is not saved
-*severity*: the key to save the log severity to. If falsely value is provided, severity is not saved
-*message*: the key to save the timestamp to. If falsely value is provided, the message is not saved (not sure why you would want to do that...)
-*stack*: the key to save the stack trace to. If falsely value is provided, the stack trace is not saved
-*outputs*: an array of functions to pass the output to (for logging to console, sending to log aggregator, etc)
+*every*: An object to copy to every log. Default is empty object (`{}`)
+
+*timestamp*: the key to save the timestamp to. If falsely value is provided, timestamp is not saved. Default is `timestamp`.
+
+*severity*: the key to save the log severity to. If falsely value is provided, severity is not saved. Default is `severity`.
+
+*message*: the key to save the timestamp to. If falsely value is provided, the message is not saved (not sure why you would want to do that...). Default is `msg`.
+
+*stack*: the key to save the stack trace to. If falsely value is provided, the stack trace is not saved. Default is `stack`.
+
+*outputs*: an array of functions to pass the output to (for logging to console, sending to log aggregator, etc). Default is no actions.
 
 
 #### logger.trace / debug / info / warn / error / fatal
