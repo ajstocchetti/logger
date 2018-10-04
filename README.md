@@ -1,16 +1,8 @@
 # AROL
 
-Anal Retentive Opinionated Logger
+Anal Retentive Opinionated Logger. Now less opinionated.
 
 Because I'm really high maintenance about my logging. Sorry I'm not sorry.
-
-Creates an object and logs to console. Can be picked up by another service and processed.
-
-Todo:
-- add outputs other than the console
-- make console logger easier to read
-
-Current state: intended to be used in AWS lambda -> cloud watch logs
 
 ## Basic Usage
 Install
@@ -20,21 +12,59 @@ npm -i arol
 
 Use
 ```javascript
-const logger = require('arol');
+// basic use
+const Arol = require('arol');
+const logger = new Arol();
 logger.info('Here is a message');
+```
 
-// add some details
-const thingOfInterest = { name: 'Lucy', isXena: false };
-logger.debug('debugging some object', null, thingOfInterest);
+This is not very helpful, as nothing is saved by default. The logger returns an object with the log message and metadata
+```javascript
+// do something with the log
+const log = logger.info('Something just happened');
+console.log(JSON.stringify(log));
+```
 
+Do something with every log
+```javascript
+const prettyPrint = obj => console.log(JSON.stringify(obj, null, 2));
+const sendToLogStore = data => { /* */ };
+const logger = new Arol({ outputs: [prettyPrint, sendToLogStore] });
+logger.info('This will be printed and saved to store');
+
+// pass in errors and get stack trace
 try {
   doSomethingBad();
 } catch(err) {
   logger.warn('Unable to do something bad', err);
 }
+
+// add some details
+const thingOfInterest = { name: 'Lucy', isXena: false };
+logger.debug('debugging some object', null, thingOfInterest);
+
 ```
 
 ## API
+#### constructor
+```javascript
+const logger = new Arol({
+  every: {},
+  timestamp: 'timestamp',
+  severity: 'severity',
+  message: 'msg',
+  stack: 'stack',
+  outputs: [ console.log ],
+});
+```
+*every*: An object to copy to every log
+*timestamp*: the key to save the timestamp to. If falsely value is provided, timestamp is not saved
+*severity*: the key to save the log severity to. If falsely value is provided, severity is not saved
+*message*: the key to save the timestamp to. If falsely value is provided, the message is not saved (not sure why you would want to do that...)
+*stack*: the key to save the stack trace to. If falsely value is provided, the stack trace is not saved
+*outputs*: an array of functions to pass the output to (for logging to console, sending to log aggregator, etc)
+
+
 #### logger.trace / debug / info / warn / error / fatal
 Log something at the specified severity level
 ```javascript
@@ -45,20 +75,3 @@ logger.error(message, error, additionalDetails);
 *error*: an error to log. This should be a node.js error object. If it is not an error, the logger will make it an error by calling `new Error(error)`. The error message, error type and stack trace will be logged in `error_info` key. If something falsy (null, undefined) is passed in, the `error_info` key is not added.
 
 *additionalDetails*: any other info (typically an object) to save. This data is logged in the `details` key. If something falsy is passed in, the `details` key is not added.
-
-#### logger.init
-If there are additional fields to log with every log item, and these values are static, pass them in here. They will be added to every log.
-```javascript
-const staticValues = { application: 'my_app', server_ip: '1.2.3.5'};
-logger.init(staticValues);
-logger.debug('testing');
-// {
-//   "timestamp": "2018-01-01T00:00:00.000Z",
-//   "severity": "debug`",
-//   "msg": "testing",
-//   "stack": { ... },
-//   "application": "my_app",
-//   "server_ip": "1.2.3.5"
-// }
-```
-*staticValues*: an object to copy to every log.
