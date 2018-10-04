@@ -1,10 +1,12 @@
 const chai = require('chai');
+const sinon = require('sinon');
+chai.use(require('sinon-chai'));
 const path = require('path');
 const logClass = require('../src');
 const helper = require('./helper');
 
 const expect = chai.expect;
-const logger = new logClass({ outputs: [] });
+const logger = new logClass();
 
 describe('Basic methods', function() {
   it('Has a log method', function() {
@@ -49,7 +51,7 @@ describe('Constructor "every" options', function() {
     num: 23,
     func: function() { return x; }
   }
-  const everyLogger = new logClass({ every, outputs: [] });
+  const everyLogger = new logClass({ every });
 
   describe('Static values', function() {
     const log = everyLogger.debug('msg');
@@ -78,15 +80,13 @@ describe('Logger provided field options', function() {
     severity: 0,
     message: null,
     stack: undefined,
-    outputs: []
   });
-  const defaultVals = new logClass({ outputs: [] });
+  const defaultVals = new logClass();
   const overrides = new logClass({
     timestamp: 'the_ts',
     severity: 123,
     message: 'some thing',
     stack: 'yeah',
-    outputs: [],
   });
 
   describe('"timestamp" field', function() {
@@ -173,7 +173,7 @@ describe('Log parameters', function() {
     it('Adds nested objects', function() {
       expect(log).to.have.nested.property('a.deep.nested.thing', true);
     });
-    it('Does not override "provided" outputs', function() {
+    it('Does not override "provided" fields', function() {
       expect(log.timestamp).not.to.equal('this is not seen');
     });
     it('Overrides arguments passed in logger constructor "every"', function() {
@@ -195,5 +195,23 @@ describe('Log parameters', function() {
     it('Stack.function is correct', function() {
       expect(logStack.function).to.equal('stackTestFunc');
     });
+  });
+});
+
+describe('Logger outputs', function() {
+  it('Calls each output funciton', function() {
+    const spy1 = sinon.spy();
+    const spy2 = sinon.spy();
+    const spy3 = sinon.spy();
+    const outLog = new logClass({ outputs: [ spy1, spy2, spy3 ]});
+    outLog.warn('Calling outputs!');
+    expect(spy1).to.have.been.calledOnce;
+    expect(spy2).to.have.been.calledOnce;
+    expect(spy3).to.have.been.calledOnce;
+  });
+  it('Does not throw error if non-function is passed in', function() {
+    const notAFunc = 17;
+    const badLog = new logClass({ outputs: [notAFunc ]});
+    expect(() => badLog.error('Whats going to happen?')).not.to.throw();
   });
 });

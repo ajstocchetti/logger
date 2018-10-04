@@ -2,6 +2,7 @@ const utils = require('./utils');
 
 const isObj = p => p && typeof p === 'object';
 const makeObj = (o, obj = {}) => isObj(o) ? o : obj;
+const isFunc = f => typeof f === 'function';
 
 class logger {
   constructor(opts = {}) {
@@ -12,7 +13,9 @@ class logger {
       message: opts.hasOwnProperty('message') ? opts.message : 'msg',
       stack: opts.hasOwnProperty('stack') ? opts.stack : 'stack',
     };
-    this._outputs = Array.isArray(opts.outputs) ? opts.outputs : [printJson];
+
+    const outs = Array.isArray(opts.outputs) ? opts.outputs : [opts.outputs];
+    this._outputs = outs.filter(isFunc);
   }
 
   log(severity, msg, err, details) {
@@ -60,26 +63,21 @@ class logger {
     }
 
     this._outputs.forEach(output => {
-      if (typeof output === 'function') {
-        try {
-          output(data);
-        } catch(err) {
-          // ?!?!
-        }
-      }
+      try { output(data); }
+      catch(err) { /* ?!?! */ }
     });
     return data;
   }
 }
 
-function printJson(data) {
-  console.log(JSON.stringify(data, null, 2));
-}
-
-function printLine(data, keys = ['timestamp', 'severity', 'msg']) {
-  const some = [];
-  keys.forEach(k => some.push(data[k]));
-  console.log(some.join('\t'));
-}
+// function printJson(data) {
+//   console.log(JSON.stringify(data, null, 2));
+// }
+//
+// function printLine(data, keys = ['timestamp', 'severity', 'msg']) {
+//   const some = [];
+//   keys.forEach(k => some.push(data[k]));
+//   console.log(some.join('\t'));
+// }
 
 module.exports = logger;
