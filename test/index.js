@@ -84,7 +84,7 @@ describe('Logger provided field options', function() {
   const defaultVals = new logClass();
   const overrides = new logClass({
     timestamp: 'the_ts',
-    severity: 123,
+    severity: '123',
     message: 'some thing',
     stack: 'yeah',
   });
@@ -120,7 +120,7 @@ describe('Logger provided field options', function() {
     });
     it('Returns name when provided a value', function() {
       expect(overrides.warn('blah')).not.to.have.property('severity');
-      expect(overrides.warn('blah')).to.have.property(123);
+      expect(overrides.warn('blah')).to.have.property('123');
     });
   });
 
@@ -194,8 +194,8 @@ describe('Log parameters', function() {
 
   describe('Stack output', function() {
     const logStack = helper.stackTestFunc(logger, 'debug', 'some msg').stack;
-    xit('Stack.file is correct', function() {
-      const helperfile = path.resolve('./helper.js')
+    it('Stack.file is correct', function() {
+      const helperfile = path.resolve(__dirname, './helper.js');
       expect(logStack.file).to.equal(helperfile);
     });
     it('Stack.line is correct', function() {

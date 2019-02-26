@@ -6,15 +6,26 @@ const isFunc = f => typeof f === 'function';
 
 const default_ts = () => new Date().toISOString();
 
+function validOptString(opts, key, fallback) {
+  if (opts.hasOwnProperty(key)) {
+    if (!opts[key]) return false;
+    else if (typeof opts[key] === 'string') return opts[key];
+  }
+  return fallback;
+}
+function validFunc(func, fallback) {
+  return func && typeof func === 'function' ? func : fallback;
+}
+
 class logger {
   constructor(opts = {}) {
     this._every = makeObj(opts.every);
     this._provided = {
-      timestamp: opts.hasOwnProperty('timestamp') ? opts.timestamp : 'timestamp',
-      ts_func: opts.hasOwnProperty('ts_function') && typeof opts.ts_function === 'function' ? opts.ts_function : default_ts,
-      severity: opts.hasOwnProperty('severity') ? opts.severity : 'severity',
-      message: opts.hasOwnProperty('message') ? opts.message : 'msg',
-      stack: opts.hasOwnProperty('stack') ? opts.stack : 'stack',
+      timestamp: validOptString(opts, 'timestamp', 'timestamp'),
+      ts_func: validFunc(opts.ts_function, default_ts),
+      severity: validOptString(opts, 'severity', 'severity'),
+      message: validOptString(opts, 'message', 'msg'),
+      stack: validOptString(opts, 'stack', 'stack'),
     };
 
     const outs = Array.isArray(opts.outputs) ? opts.outputs : [opts.outputs];
