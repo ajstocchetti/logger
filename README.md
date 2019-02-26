@@ -1,8 +1,8 @@
 # AROL
 
-Anal Retentive Opinionated Logger. Now less opinionated.
+Anal Retentive Opinionated Logger. Because I'm really high maintenance about my logging.
 
-Because I'm really high maintenance about my logging. Sorry I'm not sorry.
+Now with 40% fewer opinions.
 
 ## Basic Usage
 Install
@@ -59,13 +59,15 @@ const logger = new Arol({
 ```
 *every*: An object to copy to every log. Default is empty object (`{}`)
 
-*timestamp*: the key to save the timestamp to. If falsely value is provided, timestamp is not saved. Default is `timestamp`.
+*timestamp*: the key to save the timestamp to. If falsely value is provided, timestamp is not saved. Default is `timestamp` if non specified or non-string value specified.
 
-*severity*: the key to save the log severity to. If falsely value is provided, severity is not saved. Default is `severity`.
+*ts_function*: the function to generate the timestamp. If no function is provided, default is the current date in simplified extended ISO format, ISO 8601. `new Date().toISOString()`
 
-*message*: the key to save the timestamp to. If falsely value is provided, the message is not saved (not sure why you would want to do that...). Default is `msg`.
+*severity*: the key to save the log severity to. If falsely value is provided, severity is not saved. Default is `severity` if non specified or non-string value specified.
 
-*stack*: the key to save the stack trace to. If falsely value is provided, the stack trace is not saved. Default is `stack`.
+*message*: the key to save the timestamp to. If falsely value is provided, the message is not saved (not sure why you would want to do that...). Default is `msg` if non specified or non-string value specified.
+
+*stack*: the key to save the stack trace to. If falsely value is provided, the stack trace is not saved. Default is `stack` if non specified or non-string value specified.
 
 *outputs*: an array of functions to pass the output to (for logging to console, sending to log aggregator, etc). Default is no actions.
 
