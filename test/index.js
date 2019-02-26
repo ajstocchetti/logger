@@ -102,6 +102,15 @@ describe('Logger provided field options', function() {
     });
   });
 
+  describe('"ts_function" method', function() {
+    it('Calls the timestamp function if one is provided', function() {
+      const timestampSpy = sinon.spy();
+      const l = new logClass({ ts_function: timestampSpy });
+      const log = l.warn('testing ts function');
+      expect(timestampSpy).to.have.been.calledOnce;
+    });
+  });
+
   describe('"severity" field', function() {
     it('Returns "severity" field when parameter is ommitted', function() {
       expect(defaultVals.warn('blah')).to.have.property('severity');

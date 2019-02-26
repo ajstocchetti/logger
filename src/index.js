@@ -4,11 +4,14 @@ const isObj = p => p && typeof p === 'object';
 const makeObj = (o, obj = {}) => isObj(o) ? o : obj;
 const isFunc = f => typeof f === 'function';
 
+const default_ts = () => new Date().toISOString();
+
 class logger {
   constructor(opts = {}) {
     this._every = makeObj(opts.every);
     this._provided = {
       timestamp: opts.hasOwnProperty('timestamp') ? opts.timestamp : 'timestamp',
+      ts_func: opts.hasOwnProperty('ts_function') && typeof opts.ts_function === 'function' ? opts.ts_function : default_ts,
       severity: opts.hasOwnProperty('severity') ? opts.severity : 'severity',
       message: opts.hasOwnProperty('message') ? opts.message : 'msg',
       stack: opts.hasOwnProperty('stack') ? opts.stack : 'stack',
@@ -49,7 +52,14 @@ class logger {
 
     if (isObj(details)) data = {...data, ...details };
 
-    if (this._provided.timestamp) data[this._provided.timestamp] = new Date();
+    if (this._provided.timestamp) {
+      try {
+        data[this._provided.timestamp] = this._provided.ts_func();
+      } catch (err) {
+        // should ts be set to default on failure?
+        // data[this._provided.timestamp] = default_ts();
+      }
+    }
     if (this._provided.severity) data[this._provided.severity] = sev;
     if (this._provided.message) data[this._provided.message] = msg;
     if (this._provided.stack) data[this._provided.stack] = utils.getStack(2);
