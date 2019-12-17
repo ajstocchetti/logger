@@ -61,7 +61,7 @@ class logger {
       data[key] = (typeof val === 'function') ? val() : val;
     });
 
-    if (isObj(details)) data = {...data, ...details };
+    if (isObj(details)) data.details = details;
 
     if (this._provided.timestamp) {
       try {

@@ -23,6 +23,16 @@ This is not very helpful, as nothing is saved by default. The logger returns an 
 // do something with the log
 const log = logger.info('Something just happened');
 console.log(JSON.stringify(log));
+// {
+//   "timestamp": "2018-01-02T03:45:53.589Z",
+//   "severity": "info",
+//   "msg": "Something just happened",
+//   "stack": {
+//     "file": "/home/dev/arol/readme.js",
+//     "line": 1,
+//     "function": null
+//   }
+// }
 ```
 
 Do something with every log
@@ -32,17 +42,54 @@ const sendToLogStore = data => { /* */ };
 const logger = new Arol({ outputs: [prettyPrint, sendToLogStore] });
 logger.info('This will be printed and saved to store');
 
-// pass in errors and get stack trace
+// only print some of the fields, on a single line
+const printLine = data => console.log(data.timestamp, '--', data.severity, '--', data.msg);
+const logger = new Arol({ outputs: [printLine] });
+logger.info('This will be printed on one line');
+// 2018-01-02T03:45:53.589Z--info--This will be printed on one line
+```
+Pass in errors and get stack trace
+```javascript
 try {
-  doSomethingBad();
+  throw new TypeError('Bad type!');
 } catch(err) {
   logger.warn('Unable to do something bad', err);
 }
-
-// add some details
-const thingOfInterest = { name: 'Lucy', isXena: false };
+// {
+//   "timestamp": "2018-01-02T03:45:53.589Z",
+//   "severity": "warn",
+//   "msg": "Unable to do something bad",
+//   "stack": {
+//     "file": "/home/dev/arol/readme.js",
+//     "line": 7,
+//     "function": null
+//   },
+//   "error_info": {
+//     "message": "Bad type!",
+//     "name": "TypeError",
+//     "line": "5",
+//     "stack": "TypeError: Bad type!\n    at Object.<anonymous> (/home/dev/arol/readme.js:10:13)"
+//   }
+// }
+```
+Add some details
+```javascript
+const thingOfInterest = { name: 'Lucy Lawless', isXena: false };
 logger.debug('debugging some object', null, thingOfInterest);
-
+// {
+//   "timestamp": "2018-01-02T03:45:53.589Z",
+//   "severity": "debug",
+//   "msg": "debugging some object",
+//   "stack": {
+//     "file": "/home/dev/arol/readme.js",
+//     "line": 9,
+//     "function": null
+//   },
+//   "details": {
+//     "name": "Lucy Lawless",
+//     "isXena": false
+//   }
+// }
 ```
 
 ## API
@@ -81,4 +128,4 @@ logger.error(message, error, additionalDetails);
 
 *error*: an error to log. This should be a node.js error object. If it is not an error, the logger will make it an error by calling `new Error(error)`. The error message, error type and stack trace will be logged in `error_info` key. If something falsy (null, undefined) is passed in, the `error_info` key is not added.
 
-*additionalDetails*: any other info (typically an object) to save. This data is logged in the `details` key. If something falsy is passed in, the `details` key is not added.
+*additionalDetails*: an object of additional details to save. This data is logged in the `details` key. If something a non-object is provided in, the `details` key is not added. Will override any `details` info set in the `every` field of the logger constructor.
