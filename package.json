@@ -1,6 +1,6 @@
 {
   "name": "arol",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Intended to expedite logging in applications",
   "main": "index.js",
   "scripts": {

@@ -164,30 +164,40 @@ describe('Log parameters', function() {
   // });
 
   describe('Details', function() {
-    const deetsLogger = new logClass({ every: { some: 'thing', rand: 'rand' } });
     const extra = {
-      timestamp: 'this is not seen',
       some: 'val',
       its: 1,
       rand: Math.random(),
       a: { deep: { nested: { thing: true } } }
     };
-    const log = deetsLogger.warn('test', null, extra);
 
-    it('Adds keys to log', function() {
-      expect(log.some).to.equal('val');
-      expect(log.its).to.equal(1);
-      expect(log.rand).to.equal(extra.rand);
+    it('Adds keys to log.details', function() {
+      const logger = new logClass();
+      const log = logger.info('test', null, extra);
+      expect(log.details.some).to.equal('val');
+      expect(log.details.its).to.equal(1);
+      expect(log.details.rand).to.equal(extra.rand);
+    });
+    it('Does not adds value non-objects log.details', function() {
+      const logger = new logClass();
+      const log = logger.info('test', null, 7);
+      expect(log.details).not.to.equal(7);
     });
     it('Adds nested objects', function() {
-      expect(log).to.have.nested.property('a.deep.nested.thing', true);
+      const logger = new logClass();
+      const log = logger.info('test', null, extra);
+      expect(log.details).to.have.nested.property('a.deep.nested.thing', true);
     });
     it('Does not override "provided" fields', function() {
-      expect(log.timestamp).not.to.equal('this is not seen');
+      const logger = new logClass({ severity: 'details' });
+      const deets = { some: 'data' };
+      const log = logger.info('test', null, deets);
+      expect(log.details).not.to.equal(deets);
     });
     it('Overrides arguments passed in logger constructor "every"', function() {
-      expect(log.some).not.to.equal('thing');
-      expect(log.rand).not.to.equal('rand');
+      const logger = new logClass({ every: { details: { some: 'things' }}});
+      const log = logger.info('test', null, extra);
+      expect(log.details.some).not.to.equal('things');
     });
   });
 
